@@ -1,4 +1,4 @@
-public enum CDPDataTypes
+public enum CDPDataType
 {
     UNDEFINED,
     DOUBLE,
@@ -22,39 +22,37 @@ public class Blob
         return reader.ReadUInt16();
     }
 
-    public static CDPDataTypes GetType(BinaryReader reader)
+    public static CDPDataType GetType(BinaryReader reader)
     {
-        return (CDPDataTypes)reader.ReadByte();
+        return (CDPDataType)reader.ReadByte();
     }
 
-    public static double GetValue(BinaryReader reader, CDPDataTypes type)
+    public static double GetValue(BinaryReader reader, CDPDataType type)
     {
         switch (type)
         {
-            case CDPDataTypes.DOUBLE:
+            case CDPDataType.DOUBLE:
                 return (double)reader.ReadDouble();
-            case CDPDataTypes.UINT64:
+            case CDPDataType.UINT64:
                 return (double)reader.ReadUInt64();
-            case CDPDataTypes.INT64:
+            case CDPDataType.INT64:
                 return (double)reader.ReadInt64();
-            case CDPDataTypes.FLOAT:
-                return (double)reader.ReadDecimal();
-            case CDPDataTypes.UINT:
+            case CDPDataType.FLOAT:
+                return (double)reader.ReadDouble();
+            case CDPDataType.UINT:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.INT:
+            case CDPDataType.INT:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.USHORT:
+            case CDPDataType.USHORT:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.SHORT:
+            case CDPDataType.SHORT:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.UCHAR:
+            case CDPDataType.UCHAR:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.CHAR:
+            case CDPDataType.CHAR:
                 return (double)reader.ReadUInt16();
-            case CDPDataTypes.BOOL:
-                return (double)reader.ReadInt16();
-            case CDPDataTypes.STRING:
-                throw new InvalidDataException("String not supported when reading blob");
+            case CDPDataType.BOOL:
+                return (double)(reader.ReadBoolean() ? 1 : 0);
             default:
                 throw new InvalidDataException("No matching types when reading blob");
         }

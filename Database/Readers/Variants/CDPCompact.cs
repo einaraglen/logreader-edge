@@ -11,18 +11,16 @@ public class CDPCompact : ICDPReader
 
     public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, int changes)
     {
-        this.unpacker.GetKeyframes(signals, changes);
-        throw new NotImplementedException();
+        return this.unpacker.GetLastKeyframes(signals, changes);
     }
 
     public Dictionary<string, Dictionary<double, double>> GetRange(List<string> signals, long from, long to)
     {
-        this.unpacker.GetRange(signals, from, to);
-        throw new NotImplementedException();
+        return this.unpacker.GetRange(signals, from, to);
     }
 
     public List<string> GetSignals()
     {
-        throw new NotImplementedException();
+        return this.unpacker.signals.Select(x => x.Value.name).ToList();
     }
 }

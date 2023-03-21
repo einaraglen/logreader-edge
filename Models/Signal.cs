@@ -10,4 +10,8 @@ public class SignalMetadata {
         this.type = type;
         this.path = path;
     }
+
+    public CDPDataType Type() {
+        return (CDPDataType)Enum.Parse(typeof(CDPDataType), this.type!.ToUpper());
+    }
 }

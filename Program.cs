@@ -1,18 +1,17 @@
 ﻿using Database.Readers;
 
-Parser parser = new Parser("./assets/compact");
+Parser parser = new Parser("./assets/split");
 
 List<string> test = new List<string>{
-    "MemUsedRelative",
-    "CPULoad"
+    "MemUsedLoggerApp",
 };
 
 // long from = 1538636400562;
 // long to = 1538636404362;
 // int changes = 5;
 
-long from = 1506556800156;
-long to = 1506556800776;
+long from = 1665584962017;
+long to = from + 100000;
 
 
 // parser.reader.GetSignals().ForEach(x => Console.WriteLine(x));
