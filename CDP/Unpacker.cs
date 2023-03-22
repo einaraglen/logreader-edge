@@ -1,6 +1,7 @@
 using System.Globalization;
-using Database.Readers;
 using Microsoft.Data.Sqlite;
+
+namespace CDP;
 
 public class Unpacker
 {
@@ -20,7 +21,7 @@ public class Unpacker
 
     public void GetSignals()
     {
-        SqliteCommand command = connection.CreateCommand(); 
+        SqliteCommand command = connection.CreateCommand();
 
         command.CommandText = $"SELECT * FROM {this.GetSignalTable()}";
 
@@ -33,11 +34,11 @@ public class Unpacker
         }
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetLastKeyframes(List<string> signals, int frames)
+    public Dictionary<string, Dictionary<double, double>> GetLastKeyframes(List<string> signals, long frames)
     {
         SqliteCommand command = connection.CreateCommand();
 
-        command.CommandText = $"SELECT x_axis, {this.GetKeyframesColumns(signals)} FROM KeyFrames1 ORDER BY x_axis DESC LIMIT {frames}";
+        command.CommandText = $"SELECT x_axis, {this.GetKeyframesColumns(signals)} FROM KeyFrames0 ORDER BY x_axis DESC LIMIT {frames}";
 
         SqliteDataReader reader = command.ExecuteReader();
 
@@ -60,7 +61,8 @@ public class Unpacker
         return collection;
     }
 
-    private Dictionary<string, Dictionary<double, double>> GetRangeKeyframes(List<string> signals, long from, long to) {
+    private Dictionary<string, Dictionary<double, double>> GetRangeKeyframes(List<string> signals, long from, long to)
+    {
         SqliteCommand command = connection.CreateCommand();
 
         string min = Utils.DoubleToString(from / 1000.0);
@@ -74,13 +76,13 @@ public class Unpacker
 
         while (reader.Read())
         {
-            double timestamp = Convert.ToDouble(reader.GetString(0), CultureInfo.InvariantCulture) * 1000;
+            double timestamp = reader.GetDouble(0) * 1000;
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
                 Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
-                double value = Convert.ToDouble(reader.GetString(i + 1), CultureInfo.InvariantCulture);
+                double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
             }
@@ -96,6 +98,8 @@ public class Unpacker
         string min = Utils.DoubleToString(from / 1000.0);
         string max = Utils.DoubleToString(to / 1000.0);
 
+        Console.WriteLine($"Searching in range {min}, {max}");
+
         command.CommandText = $"SELECT * FROM {this.GetBlobTable()} WHERE x_axis BETWEEN {min} AND {max}";
 
         SqliteDataReader reader = command.ExecuteReader();
@@ -104,12 +108,15 @@ public class Unpacker
 
         while (reader.Read())
         {
-            double timestamp = Convert.ToDouble(reader.GetString(0), CultureInfo.InvariantCulture) * 1000;
+            double timestamp = reader.GetDouble(0) * 1000;
             Stream stream = reader.GetStream(1);
-            
-            if (this.type == CDPDataStore.Split) {
+
+            if (this.type == CDPDataStore.Split)
+            {
                 this.UnpackSplit(stream, signals, timestamp, collection);
-            } else {
+            }
+            else
+            {
                 this.UnpackCompact(stream, signals, timestamp, collection);
             }
         }
@@ -117,13 +124,15 @@ public class Unpacker
         List<string> completed = collection.Select(x => x.Key).ToList();
         List<string> missing = signals.Where(signal => !completed.Contains(signal)).ToList();
 
+        Console.WriteLine($"Missing {missing.Count} signals in range result");
+
         Dictionary<string, Dictionary<double, double>> last = this.GetRangeKeyframes(missing, from, to);
         last.ToList().ForEach(x => collection.Add(x.Key, x.Value));
 
         return collection;
     }
 
-    
+
 
     private void UnpackSplit(Stream stream, List<string> signals, double timestamp, Dictionary<string, Dictionary<double, double>> collection)
     {
@@ -133,7 +142,8 @@ public class Unpacker
 
             SignalMetadata signal = this.signals[id];
 
-            if (!signals.Contains(signal.name)) {
+            if (!signals.Contains(signal.name))
+            {
                 return;
             }
 
@@ -155,7 +165,8 @@ public class Unpacker
 
             SignalMetadata signal = this.signals[id];
 
-             if (!signals.Contains(signal.name)) {
+            if (!signals.Contains(signal.name))
+            {
                 return;
             }
 
@@ -165,6 +176,31 @@ public class Unpacker
             values.Add(timestamp, value);
             collection[signal.name] = values;
         }
+    }
+
+    private double GetBound(string variant)
+    {
+        SqliteCommand command = connection.CreateCommand();
+        command.CommandText = $"SELECT {variant}(x_axis) FROM {this.GetBlobTable()}";
+
+        SqliteDataReader reader = command.ExecuteReader();
+
+        double value = 0.0;
+
+        while (reader.Read())
+        {
+            value = reader.GetDouble(0);
+        }
+
+        return value * 1000;
+    }
+
+    public Range GetBounds()
+    {
+        double min = this.GetBound("MIN");
+        double max = this.GetBound("MAX");
+
+        return new Range(min, max);
     }
 
     private string GetKeyframesColumns(List<string> signals)

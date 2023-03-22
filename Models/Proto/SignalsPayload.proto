@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option csharp_namespace = "Models.Proto";
+
+message Signal {
+    int32 id = 1;
+    string name = 2;
+    optional string path = 3;
+}
+
+message SignalsPayload {
+  repeated Signal signals = 1;
+}

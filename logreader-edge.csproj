@@ -9,7 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Google.Cloud.Language.V1" Version="3.2.0" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.22.1" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.1.4.563" />
   </ItemGroup>
 
 </Project>

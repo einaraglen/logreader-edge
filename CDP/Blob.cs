@@ -1,3 +1,5 @@
+namespace CDP;
+
 public enum CDPDataType
 {
     UNDEFINED,

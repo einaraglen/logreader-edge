@@ -1,7 +1,7 @@
 using System.Globalization;
 using Microsoft.Data.Sqlite;
 
-namespace Database.Readers.Variants;
+namespace CDP.Variants;
 
 public class CDPBasic : ICDPReader
 {
@@ -20,7 +20,7 @@ public class CDPBasic : ICDPReader
         return this.type == CDPDataStore.Basic ? "SQLSignalLogger" : "SQLSignalLogger2";
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, int changes)
+    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, long changes)
     {
 
         SqliteCommand command = connection.CreateCommand();
@@ -33,13 +33,13 @@ public class CDPBasic : ICDPReader
 
         while (reader.Read())
         {
-            double timestamp = Convert.ToDouble(reader.GetString(0), CultureInfo.InvariantCulture) * 1000;
+            double timestamp = reader.GetDouble(0) * 1000;
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
                 Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
-                double value = Convert.ToDouble(reader.GetString(i + 1), CultureInfo.InvariantCulture);
+                double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
             }
@@ -63,13 +63,13 @@ public class CDPBasic : ICDPReader
 
         while (reader.Read())
         {
-            double timestamp = Convert.ToDouble(reader.GetString(0), CultureInfo.InvariantCulture) * 1000;
+            double timestamp = reader.GetDouble(0) * 1000;
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
                 Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
-                double value = Convert.ToDouble(reader.GetString(i + 1), CultureInfo.InvariantCulture);
+                double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
             }
@@ -78,14 +78,16 @@ public class CDPBasic : ICDPReader
         return collection;
     }
 
-    public List<string> GetSignals()
+    public List<SignalMetadata> GetSignals()
     {
         SqliteCommand command = connection.CreateCommand();
         command.CommandText = $"SELECT name FROM pragma_table_info('{this.GetTable()}') ORDER BY cid";
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        List<string> signals = new List<string>();
+        List<SignalMetadata> signals = new List<SignalMetadata>();
+
+        int id = 1;
 
         while (reader.Read())
         {
@@ -93,7 +95,8 @@ public class CDPBasic : ICDPReader
 
             if (!column.Equals("id") && !column.Equals("timestamp"))
             {
-                signals.Add(reader.GetString(0));
+                signals.Add(new SignalMetadata(id, reader.GetString(0), null, null));
+                id++;
             }
         }
 
@@ -103,5 +106,29 @@ public class CDPBasic : ICDPReader
     private string GetSignalColumns(List<string> signals)
     {
         return String.Join(", ", signals);
+    }
+
+    private double GetBound(string variant) {
+        SqliteCommand command = connection.CreateCommand();
+        command.CommandText = $"SELECT {variant}(timestamp) FROM {this.GetTable()}";
+
+        SqliteDataReader reader = command.ExecuteReader();
+
+        double value = 0.0;
+
+        while (reader.Read())
+        {
+            value = reader.GetDouble(0);
+        }
+
+        return value * 1000;
+    }
+
+    public Range GetBounds()
+    {
+        double min = this.GetBound("MIN");
+        double max = this.GetBound("MAX");
+
+        return new Range(min, max);
     }
 }

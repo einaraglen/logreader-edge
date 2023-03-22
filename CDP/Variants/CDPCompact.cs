@@ -1,4 +1,4 @@
-namespace Database.Readers.Variants;
+namespace CDP.Variants;
 
 public class CDPCompact : ICDPReader
 {
@@ -9,7 +9,7 @@ public class CDPCompact : ICDPReader
         this.unpacker = new Unpacker(file, CDPDataStore.Compact);
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, int changes)
+    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, long changes)
     {
         return this.unpacker.GetLastKeyframes(signals, changes);
     }
@@ -19,8 +19,13 @@ public class CDPCompact : ICDPReader
         return this.unpacker.GetRange(signals, from, to);
     }
 
-    public List<string> GetSignals()
+    public List<SignalMetadata> GetSignals()
     {
-        return this.unpacker.signals.Select(x => x.Value.name).ToList();
+        return this.unpacker.signals.Select(x => x.Value).ToList();
+    }
+
+    public Range GetBounds()
+    {
+        return this.unpacker.GetBounds();
     }
 }

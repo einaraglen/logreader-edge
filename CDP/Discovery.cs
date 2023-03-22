@@ -1,5 +1,5 @@
 using Microsoft.Data.Sqlite;
-namespace Database.Readers;
+namespace CDP;
 
 public enum CDPDataStore
 {

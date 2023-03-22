@@ -1,3 +1,6 @@
+using CDP;
+using Models.Proto;
+
 public class SignalMetadata {
     public int id;
     public string name;
@@ -9,6 +12,14 @@ public class SignalMetadata {
         this.name = name;
         this.type = type;
         this.path = path;
+    }
+
+    public Signal GetFormatted() {
+        return new Signal {
+            Id = this.id,
+            Name = this.name,
+            Path = this.path
+        };
     }
 
     public CDPDataType Type() {
