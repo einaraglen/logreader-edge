@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option csharp_namespace = "Models.Proto";
+
+message Blob {
+    repeated int64 timestamp = 1;
+    // repeated double value = 2;
+}
+
+message Blob2 {
+    repeated double value = 1;
+}
+
+message TestPayload {   
+    repeated Blob blobs = 1;
+    repeated Blob2 values = 2;
+}

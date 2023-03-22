@@ -21,7 +21,7 @@ public class MQTT
     {
 
         this.client = new MqttFactory().CreateManagedMqttClient();
-        this.responder = new MQTTResponder(this.client, "./assets/split");
+        this.responder = new MQTTResponder(this.client, "./assets/basic");
         this.Handlers();
     }
 
