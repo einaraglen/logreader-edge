@@ -21,7 +21,7 @@ public class MQTT
     {
 
         this.client = new MqttFactory().CreateManagedMqttClient();
-        this.responder = new MQTTResponder(this.client, "./assets/basic");
+        this.responder = new MQTTResponder(this.client, "C:/Users/monga/Documents/projects/logreader-edge/assets/basic");
         this.Handlers();
     }
 

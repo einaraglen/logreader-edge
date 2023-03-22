@@ -21,15 +21,14 @@ public class Delta2 {
     return compressed;
 }
 
-public static long[] Decode(Dictionary <double, double> input) {
-    long[] values = input.Select(x => Convert.ToInt64(x.Key)).ToArray();
-    long[] decompressed = new long[values.Length];
+public static long[] Decode(long[] input) {
+    long[] decompressed = new long[input.Length];
 
-    decompressed[0] = values[0];
+    decompressed[0] = input[0];
 
     long last = 0;
-    for (int i = 1; i < values.Length; i++) {
-      last += values[i];
+    for (int i = 1; i < input.Length; i++) {
+      last += input[i];
       decompressed[i] = decompressed[i-1] + last;
     }
 

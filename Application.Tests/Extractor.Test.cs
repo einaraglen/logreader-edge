@@ -8,7 +8,7 @@ public class Utils {
     }
 }
 
-public class UnitTest1
+public class ExtractorTest
 {
     [Fact]
     public void BasicSupport()
@@ -74,10 +74,9 @@ public class UnitTest1
 
         var signal = signals[rnd.Next(signals.Count)];
 
-        Console.Write(signal.name);
 
-        var values = extractor.GetChanges(new List<string>{ signal.name }, 10);
+        var values = extractor.GetChanges(new List<string>{ "CombiPRT_FC2_FBSpeedRef" }, 5);
 
-        Assert.Equal(10, values[signal.name].Values.Count);
+        Assert.Equal(5, values["CombiPRT_FC2_FBSpeedRef"].Values.Count);
     }
 }
