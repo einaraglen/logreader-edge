@@ -11,41 +11,7 @@ using System.IO.Compression;
 using CDP;
 using Google.Protobuf;
 using Models.Proto;
-
-Int64[] Delta2Encode(Dictionary <double, double> input) {
-    List<Int64> values = input.Select(x => Convert.ToInt64(x.Key)).ToList();
-    Int64[] compressed = new Int64[values.Count];
-
-   compressed[0] = values[0];
-    Int64 curDelta = values[1] - values[0];
-    compressed[1] = curDelta;
-    
-    int i = 2;
-    while (i < values.Count) {
-      Int64 delta = values[i] - values[i-1];
-      Int64 delta2 = delta - curDelta;
-      compressed[i] = delta2;
-      curDelta = delta;
-      i++;
-    }
-
-    return compressed;
-}
-
-Int64[] Delta2Decode(Dictionary <double, double> input) {
-    List<Int64> values = input.Select(x => Convert.ToInt64(x.Key)).ToList();
-    Int64[] decompressed = new Int64[values.Count];
-
-    decompressed[0] = values[0];
-
-    Int64 curDelta = 0;
-    for (int i = 1; i < values.Count; i++) {
-      curDelta += values[i];
-      decompressed[i] = decompressed[i-1] + curDelta;
-    }
-
-    return decompressed;
-}
+using Services.Compression;
 
 Extractor extraction = new Extractor("./assets/basic");
 
@@ -56,8 +22,8 @@ var data = extraction.GetChanges(new List<string> { signal }, 10000);
 
 var uncompressed = data[signal].Select(x => Convert.ToInt64(x.Key)).ToList();
 
-var compressed = Delta2Encode(data[signal]);
-var compressedHalf = Delta2Encode(data[signal].Skip(data[signal].Count / 2).ToDictionary(x => x.Key, x => x.Value));
+var compressed = Delta2.Encode(data[signal]);
+var compressedHalf = Delta2.Encode(data[signal].Skip(data[signal].Count / 2).ToDictionary(x => x.Key, x => x.Value));
 
 TestPayload test = new TestPayload();
 

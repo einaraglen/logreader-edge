@@ -1,3 +1,5 @@
+namespace Services.Compression;
+
 public class RunLenghtEncoding
 {
     public static Dictionary<double, double> Encode(Dictionary<double, double> input)
