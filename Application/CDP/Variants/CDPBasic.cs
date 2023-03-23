@@ -20,7 +20,7 @@ public class CDPBasic : ICDPReader
         return this.type == CDPDataStore.Basic ? "SQLSignalLogger" : "SQLSignalLogger2";
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
     {
 
         SqliteCommand command = connection.CreateCommand();
@@ -29,16 +29,16 @@ public class CDPBasic : ICDPReader
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
 
         while (reader.Read())
         {
-            double timestamp = reader.GetDouble(0) * 1000;
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
-                Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
+                Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
@@ -48,7 +48,7 @@ public class CDPBasic : ICDPReader
         return collection;
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetRange(List<string> signals, long from, long to)
+    public Dictionary<string, Dictionary<long, double>> GetRange(List<string> signals, long from, long to)
     {
         SqliteCommand command = connection.CreateCommand();
 
@@ -59,16 +59,16 @@ public class CDPBasic : ICDPReader
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
 
         while (reader.Read())
         {
-            double timestamp = reader.GetDouble(0) * 1000;
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
-                Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
+                Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
@@ -126,9 +126,19 @@ public class CDPBasic : ICDPReader
 
     public Range GetBounds()
     {
-        double min = this.GetBound("MIN");
-        double max = this.GetBound("MAX");
+        long min = (long)this.GetBound("MIN");
+        long max = (long)this.GetBound("MAX");
 
         return new Range(min, max);
+    }
+
+    public void Open()
+    {
+        this.connection.Open();
+    }
+
+    public void Close()
+    {
+        this.connection.Close();
     }
 }

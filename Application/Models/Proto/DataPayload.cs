@@ -24,32 +24,33 @@ namespace Models.Proto {
     static DataPayloadReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "ChFEYXRhUGF5bG9hZC5wcm90byIrCgVFbnRyeRIMCgRuYW1lGAEgASgJEhQK",
-            "BGRhdGEYAiADKAsyBi5WYWx1ZSIpCgVWYWx1ZRIRCgl0aW1lc3RhbXAYASAB",
-            "KAESDQoFdmFsdWUYAiABKAEiJgoLRGF0YVBheWxvYWQSFwoHc2lnbmFscxgB",
-            "IAMoCzIGLkVudHJ5Qg+qAgxNb2RlbHMuUHJvdG9iBnByb3RvMw=="));
+            "ChFEYXRhUGF5bG9hZC5wcm90byIdCgpUaW1lc3RhbXBzEg8KB2VudHJpZXMY",
+            "ASADKAMiGQoGVmFsdWVzEg8KB2VudHJpZXMYASADKAEiWAoLRGF0YVBheWxv",
+            "YWQSDwoHc2lnbmFscxgBIAMoCRIfCgp0aW1lc3RhbXBzGAIgAygLMgsuVGlt",
+            "ZXN0YW1wcxIXCgZ2YWx1ZXMYAyADKAsyBy5WYWx1ZXNCD6oCDE1vZGVscy5Q",
+            "cm90b2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.Entry), global::Models.Proto.Entry.Parser, new[]{ "Name", "Data" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.Value), global::Models.Proto.Value.Parser, new[]{ "Timestamp", "Value_" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.DataPayload), global::Models.Proto.DataPayload.Parser, new[]{ "Signals" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.Timestamps), global::Models.Proto.Timestamps.Parser, new[]{ "Entries" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.Values), global::Models.Proto.Values.Parser, new[]{ "Entries" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Models.Proto.DataPayload), global::Models.Proto.DataPayload.Parser, new[]{ "Signals", "Timestamps", "Values" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class Entry : pb::IMessage<Entry>
+  public sealed partial class Timestamps : pb::IMessage<Timestamps>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Entry> _parser = new pb::MessageParser<Entry>(() => new Entry());
+    private static readonly pb::MessageParser<Timestamps> _parser = new pb::MessageParser<Timestamps>(() => new Timestamps());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Entry> Parser { get { return _parser; } }
+    public static pb::MessageParser<Timestamps> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -65,7 +66,7 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Entry() {
+    public Timestamps() {
       OnConstruction();
     }
 
@@ -73,58 +74,44 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Entry(Entry other) : this() {
-      name_ = other.name_;
-      data_ = other.data_.Clone();
+    public Timestamps(Timestamps other) : this() {
+      entries_ = other.entries_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Entry Clone() {
-      return new Entry(this);
+    public Timestamps Clone() {
+      return new Timestamps(this);
     }
 
-    /// <summary>Field number for the "name" field.</summary>
-    public const int NameFieldNumber = 1;
-    private string name_ = "";
+    /// <summary>Field number for the "entries" field.</summary>
+    public const int EntriesFieldNumber = 1;
+    private static readonly pb::FieldCodec<long> _repeated_entries_codec
+        = pb::FieldCodec.ForInt64(10);
+    private readonly pbc::RepeatedField<long> entries_ = new pbc::RepeatedField<long>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public string Name {
-      get { return name_; }
-      set {
-        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "data" field.</summary>
-    public const int DataFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Models.Proto.Value> _repeated_data_codec
-        = pb::FieldCodec.ForMessage(18, global::Models.Proto.Value.Parser);
-    private readonly pbc::RepeatedField<global::Models.Proto.Value> data_ = new pbc::RepeatedField<global::Models.Proto.Value>();
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Models.Proto.Value> Data {
-      get { return data_; }
+    public pbc::RepeatedField<long> Entries {
+      get { return entries_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as Entry);
+      return Equals(other as Timestamps);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Entry other) {
+    public bool Equals(Timestamps other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Name != other.Name) return false;
-      if(!data_.Equals(other.data_)) return false;
+      if(!entries_.Equals(other.entries_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -132,8 +119,7 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Name.Length != 0) hash ^= Name.GetHashCode();
-      hash ^= data_.GetHashCode();
+      hash ^= entries_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -152,11 +138,7 @@ namespace Models.Proto {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      data_.WriteTo(output, _repeated_data_codec);
+      entries_.WriteTo(output, _repeated_entries_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -167,11 +149,7 @@ namespace Models.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Name.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      data_.WriteTo(ref output, _repeated_data_codec);
+      entries_.WriteTo(ref output, _repeated_entries_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -182,10 +160,7 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Name.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
-      }
-      size += data_.CalculateSize(_repeated_data_codec);
+      size += entries_.CalculateSize(_repeated_entries_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -194,14 +169,11 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Entry other) {
+    public void MergeFrom(Timestamps other) {
       if (other == null) {
         return;
       }
-      if (other.Name.Length != 0) {
-        Name = other.Name;
-      }
-      data_.Add(other.data_);
+      entries_.Add(other.entries_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -217,12 +189,9 @@ namespace Models.Proto {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            data_.AddEntriesFrom(input, _repeated_data_codec);
+          case 10:
+          case 8: {
+            entries_.AddEntriesFrom(input, _repeated_entries_codec);
             break;
           }
         }
@@ -240,12 +209,9 @@ namespace Models.Proto {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            data_.AddEntriesFrom(ref input, _repeated_data_codec);
+          case 10:
+          case 8: {
+            entries_.AddEntriesFrom(ref input, _repeated_entries_codec);
             break;
           }
         }
@@ -255,16 +221,16 @@ namespace Models.Proto {
 
   }
 
-  public sealed partial class Value : pb::IMessage<Value>
+  public sealed partial class Values : pb::IMessage<Values>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<Value> _parser = new pb::MessageParser<Value>(() => new Value());
+    private static readonly pb::MessageParser<Values> _parser = new pb::MessageParser<Values>(() => new Values());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<Value> Parser { get { return _parser; } }
+    public static pb::MessageParser<Values> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -280,7 +246,7 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Value() {
+    public Values() {
       OnConstruction();
     }
 
@@ -288,59 +254,44 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Value(Value other) : this() {
-      timestamp_ = other.timestamp_;
-      value_ = other.value_;
+    public Values(Values other) : this() {
+      entries_ = other.entries_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public Value Clone() {
-      return new Value(this);
+    public Values Clone() {
+      return new Values(this);
     }
 
-    /// <summary>Field number for the "timestamp" field.</summary>
-    public const int TimestampFieldNumber = 1;
-    private double timestamp_;
+    /// <summary>Field number for the "entries" field.</summary>
+    public const int EntriesFieldNumber = 1;
+    private static readonly pb::FieldCodec<double> _repeated_entries_codec
+        = pb::FieldCodec.ForDouble(10);
+    private readonly pbc::RepeatedField<double> entries_ = new pbc::RepeatedField<double>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public double Timestamp {
-      get { return timestamp_; }
-      set {
-        timestamp_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "value" field.</summary>
-    public const int Value_FieldNumber = 2;
-    private double value_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public double Value_ {
-      get { return value_; }
-      set {
-        value_ = value;
-      }
+    public pbc::RepeatedField<double> Entries {
+      get { return entries_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as Value);
+      return Equals(other as Values);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(Value other) {
+    public bool Equals(Values other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Timestamp, other.Timestamp)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(Value_, other.Value_)) return false;
+      if(!entries_.Equals(other.entries_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -348,8 +299,7 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (Timestamp != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Timestamp);
-      if (Value_ != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(Value_);
+      hash ^= entries_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -368,14 +318,7 @@ namespace Models.Proto {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (Timestamp != 0D) {
-        output.WriteRawTag(9);
-        output.WriteDouble(Timestamp);
-      }
-      if (Value_ != 0D) {
-        output.WriteRawTag(17);
-        output.WriteDouble(Value_);
-      }
+      entries_.WriteTo(output, _repeated_entries_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -386,14 +329,7 @@ namespace Models.Proto {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (Timestamp != 0D) {
-        output.WriteRawTag(9);
-        output.WriteDouble(Timestamp);
-      }
-      if (Value_ != 0D) {
-        output.WriteRawTag(17);
-        output.WriteDouble(Value_);
-      }
+      entries_.WriteTo(ref output, _repeated_entries_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -404,12 +340,7 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (Timestamp != 0D) {
-        size += 1 + 8;
-      }
-      if (Value_ != 0D) {
-        size += 1 + 8;
-      }
+      size += entries_.CalculateSize(_repeated_entries_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -418,16 +349,11 @@ namespace Models.Proto {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(Value other) {
+    public void MergeFrom(Values other) {
       if (other == null) {
         return;
       }
-      if (other.Timestamp != 0D) {
-        Timestamp = other.Timestamp;
-      }
-      if (other.Value_ != 0D) {
-        Value_ = other.Value_;
-      }
+      entries_.Add(other.entries_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -443,12 +369,9 @@ namespace Models.Proto {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
+          case 10:
           case 9: {
-            Timestamp = input.ReadDouble();
-            break;
-          }
-          case 17: {
-            Value_ = input.ReadDouble();
+            entries_.AddEntriesFrom(input, _repeated_entries_codec);
             break;
           }
         }
@@ -466,12 +389,9 @@ namespace Models.Proto {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
+          case 10:
           case 9: {
-            Timestamp = input.ReadDouble();
-            break;
-          }
-          case 17: {
-            Value_ = input.ReadDouble();
+            entries_.AddEntriesFrom(ref input, _repeated_entries_codec);
             break;
           }
         }
@@ -516,6 +436,8 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public DataPayload(DataPayload other) : this() {
       signals_ = other.signals_.Clone();
+      timestamps_ = other.timestamps_.Clone();
+      values_ = other.values_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -527,13 +449,35 @@ namespace Models.Proto {
 
     /// <summary>Field number for the "signals" field.</summary>
     public const int SignalsFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Models.Proto.Entry> _repeated_signals_codec
-        = pb::FieldCodec.ForMessage(10, global::Models.Proto.Entry.Parser);
-    private readonly pbc::RepeatedField<global::Models.Proto.Entry> signals_ = new pbc::RepeatedField<global::Models.Proto.Entry>();
+    private static readonly pb::FieldCodec<string> _repeated_signals_codec
+        = pb::FieldCodec.ForString(10);
+    private readonly pbc::RepeatedField<string> signals_ = new pbc::RepeatedField<string>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::Models.Proto.Entry> Signals {
+    public pbc::RepeatedField<string> Signals {
       get { return signals_; }
+    }
+
+    /// <summary>Field number for the "timestamps" field.</summary>
+    public const int TimestampsFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::Models.Proto.Timestamps> _repeated_timestamps_codec
+        = pb::FieldCodec.ForMessage(18, global::Models.Proto.Timestamps.Parser);
+    private readonly pbc::RepeatedField<global::Models.Proto.Timestamps> timestamps_ = new pbc::RepeatedField<global::Models.Proto.Timestamps>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::Models.Proto.Timestamps> Timestamps {
+      get { return timestamps_; }
+    }
+
+    /// <summary>Field number for the "values" field.</summary>
+    public const int ValuesFieldNumber = 3;
+    private static readonly pb::FieldCodec<global::Models.Proto.Values> _repeated_values_codec
+        = pb::FieldCodec.ForMessage(26, global::Models.Proto.Values.Parser);
+    private readonly pbc::RepeatedField<global::Models.Proto.Values> values_ = new pbc::RepeatedField<global::Models.Proto.Values>();
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::Models.Proto.Values> Values {
+      get { return values_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -552,6 +496,8 @@ namespace Models.Proto {
         return true;
       }
       if(!signals_.Equals(other.signals_)) return false;
+      if(!timestamps_.Equals(other.timestamps_)) return false;
+      if(!values_.Equals(other.values_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -560,6 +506,8 @@ namespace Models.Proto {
     public override int GetHashCode() {
       int hash = 1;
       hash ^= signals_.GetHashCode();
+      hash ^= timestamps_.GetHashCode();
+      hash ^= values_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -579,6 +527,8 @@ namespace Models.Proto {
       output.WriteRawMessage(this);
     #else
       signals_.WriteTo(output, _repeated_signals_codec);
+      timestamps_.WriteTo(output, _repeated_timestamps_codec);
+      values_.WriteTo(output, _repeated_values_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -590,6 +540,8 @@ namespace Models.Proto {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
       signals_.WriteTo(ref output, _repeated_signals_codec);
+      timestamps_.WriteTo(ref output, _repeated_timestamps_codec);
+      values_.WriteTo(ref output, _repeated_values_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -601,6 +553,8 @@ namespace Models.Proto {
     public int CalculateSize() {
       int size = 0;
       size += signals_.CalculateSize(_repeated_signals_codec);
+      size += timestamps_.CalculateSize(_repeated_timestamps_codec);
+      size += values_.CalculateSize(_repeated_values_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -614,6 +568,8 @@ namespace Models.Proto {
         return;
       }
       signals_.Add(other.signals_);
+      timestamps_.Add(other.timestamps_);
+      values_.Add(other.values_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -633,6 +589,14 @@ namespace Models.Proto {
             signals_.AddEntriesFrom(input, _repeated_signals_codec);
             break;
           }
+          case 18: {
+            timestamps_.AddEntriesFrom(input, _repeated_timestamps_codec);
+            break;
+          }
+          case 26: {
+            values_.AddEntriesFrom(input, _repeated_values_codec);
+            break;
+          }
         }
       }
     #endif
@@ -650,6 +614,14 @@ namespace Models.Proto {
             break;
           case 10: {
             signals_.AddEntriesFrom(ref input, _repeated_signals_codec);
+            break;
+          }
+          case 18: {
+            timestamps_.AddEntriesFrom(ref input, _repeated_timestamps_codec);
+            break;
+          }
+          case 26: {
+            values_.AddEntriesFrom(ref input, _repeated_values_codec);
             break;
           }
         }

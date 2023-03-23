@@ -10,10 +10,13 @@ public class Utils {
 
 public class ExtractorTest
 {
+
+    private string root = "C:/repos/logreader-edge/assets";
+
     [Fact]
     public void BasicSupport()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/basic");
+        Extractor extractor = new Extractor($"{root}/basic");
         var signals = extractor.GetSignals();
         Assert.True(signals.Count > 0, "Extractor failed to read Basic");
     }
@@ -21,7 +24,7 @@ public class ExtractorTest
     [Fact]
     public void CompacSupport()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/compact");
+        Extractor extractor = new Extractor($"{root}/compact");
         var signals = extractor.GetSignals();
         Assert.True(signals.Count > 0, "Extractor failed to read Compact");
     }
@@ -29,7 +32,7 @@ public class ExtractorTest
     [Fact]
     public void SplitSupport()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/split");
+        Extractor extractor = new Extractor($"{root}/split");
         var signals = extractor.GetSignals();
         Assert.True(signals.Count > 0, "Extractor failed to read Split");
     }
@@ -37,7 +40,7 @@ public class ExtractorTest
     [Fact]
     public void BasicChanges()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/basic");
+        Extractor extractor = new Extractor($"{root}/basic");
         Random rnd = new Random();
 
         var signals = extractor.GetSignals();
@@ -52,7 +55,7 @@ public class ExtractorTest
     [Fact]
     public void CompactChanges()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/compact");
+        Extractor extractor = new Extractor($"{root}/compact");
         Random rnd = new Random();
 
         var signals = extractor.GetSignals();
@@ -67,7 +70,7 @@ public class ExtractorTest
     [Fact]
     public void SplitChanges()
     {
-        Extractor extractor = new Extractor("C:/Users/monga/Documents/projects/logreader-edge/assets/split");
+        Extractor extractor = new Extractor($"{root}/split");
         Random rnd = new Random();
 
         var signals = extractor.GetSignals();

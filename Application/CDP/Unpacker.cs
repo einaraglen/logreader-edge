@@ -34,7 +34,7 @@ public class Unpacker
         }
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetLastKeyframes(List<string> signals, long frames)
+    public Dictionary<string, Dictionary<long, double>> GetLastKeyframes(List<string> signals, long frames)
     {
         SqliteCommand command = connection.CreateCommand();
 
@@ -42,16 +42,16 @@ public class Unpacker
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
 
         while (reader.Read())
         {
-            double timestamp = Convert.ToDouble(reader.GetString(0), CultureInfo.InvariantCulture) * 1000;
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
-                Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
+                Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = Convert.ToDouble(reader.GetString(i + 1), CultureInfo.InvariantCulture);
                 values.Add(timestamp, value);
                 collection[name] = values;
@@ -61,7 +61,7 @@ public class Unpacker
         return collection;
     }
 
-    private Dictionary<string, Dictionary<double, double>> GetRangeKeyframes(List<string> signals, long from, long to)
+    private Dictionary<string, Dictionary<long, double>> GetRangeKeyframes(List<string> signals, long from, long to)
     {
         SqliteCommand command = connection.CreateCommand();
 
@@ -72,16 +72,16 @@ public class Unpacker
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
 
         while (reader.Read())
         {
-            double timestamp = reader.GetDouble(0) * 1000;
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
 
             for (int i = 0; i < signals.Count; i++)
             {
                 string name = signals[i];
-                Dictionary<double, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<double, double>();
+                Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
                 values.Add(timestamp, value);
                 collection[name] = values;
@@ -91,7 +91,7 @@ public class Unpacker
         return collection;
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetRange(List<string> signals, long from, long to)
+    public Dictionary<string, Dictionary<long, double>> GetRange(List<string> signals, long from, long to)
     {
         SqliteCommand command = connection.CreateCommand();
 
@@ -104,11 +104,11 @@ public class Unpacker
 
         SqliteDataReader reader = command.ExecuteReader();
 
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
 
         while (reader.Read())
         {
-            double timestamp = reader.GetDouble(0) * 1000;
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
             Stream stream = reader.GetStream(1);
 
             if (this.type == CDPDataStore.Split)
@@ -126,7 +126,7 @@ public class Unpacker
 
         Console.WriteLine($"Missing {missing.Count} signals in range result");
 
-        Dictionary<string, Dictionary<double, double>> last = this.GetRangeKeyframes(missing, from, to);
+        Dictionary<string, Dictionary<long, double>> last = this.GetRangeKeyframes(missing, from, to);
         last.ToList().ForEach(x => collection.Add(x.Key, x.Value));
 
         return collection;
@@ -134,7 +134,7 @@ public class Unpacker
 
 
 
-    private void UnpackSplit(Stream stream, List<string> signals, double timestamp, Dictionary<string, Dictionary<double, double>> collection)
+    private void UnpackSplit(Stream stream, List<string> signals, long timestamp, Dictionary<string, Dictionary<long, double>> collection)
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
@@ -151,13 +151,13 @@ public class Unpacker
 
             double value = Blob.GetValue(reader, type);
 
-            Dictionary<double, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<double, double>();
+            Dictionary<long, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<long, double>();
             values.Add(timestamp, value);
             collection[signal.name] = values;
         }
     }
 
-    private void UnpackCompact(Stream stream, List<string> signals, double timestamp, Dictionary<string, Dictionary<double, double>> collection)
+    private void UnpackCompact(Stream stream, List<string> signals, long timestamp, Dictionary<string, Dictionary<long, double>> collection)
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
@@ -172,7 +172,7 @@ public class Unpacker
 
             double value = Blob.GetValue(reader, signal.Type());
 
-            Dictionary<double, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<double, double>();
+            Dictionary<long, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<long, double>();
             values.Add(timestamp, value);
             collection[signal.name] = values;
         }
@@ -197,8 +197,8 @@ public class Unpacker
 
     public Range GetBounds()
     {
-        double min = this.GetBound("MIN");
-        double max = this.GetBound("MAX");
+        long min = (long)this.GetBound("MIN");
+        long max = (long)this.GetBound("MAX");
 
         return new Range(min, max);
     }
@@ -219,4 +219,11 @@ public class Unpacker
         return this.type == CDPDataStore.Split ? "Node" : "SignalMap";
     }
 
+    public void Open() {
+        this.connection.Open();
+    }
+
+     public void Close() {
+        this.connection.Close();
+    }
 }

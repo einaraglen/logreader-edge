@@ -74,9 +74,9 @@ public class CDPSplit : ICDPReader {
         return Path.Join(dir, $"{filename[0]}{partition}.{filename[1]}");
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
     {
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
         Dictionary<int, List<string>> groups = new Dictionary<int, List<string>>();
 
         foreach (string signal in signals) {
@@ -90,7 +90,7 @@ public class CDPSplit : ICDPReader {
         }
 
         foreach (KeyValuePair<int, List<string>> entry in groups) {
-            Dictionary<string, Dictionary<double, double>> values = this.partitions[entry.Key].GetLastKeyframes(entry.Value, changes);
+            Dictionary<string, Dictionary<long, double>> values = this.partitions[entry.Key].GetLastKeyframes(entry.Value, changes);
             values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
         }
 
@@ -98,9 +98,9 @@ public class CDPSplit : ICDPReader {
         return collection;
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetRange(List<string> signals, long from, long to)
+    public Dictionary<string, Dictionary<long, double>> GetRange(List<string> signals, long from, long to)
     {
-        Dictionary<string, Dictionary<double, double>> collection = new Dictionary<string, Dictionary<double, double>>();
+        Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
         Dictionary<int, List<string>> groups = new Dictionary<int, List<string>>();
 
         foreach (string signal in signals) {
@@ -112,7 +112,7 @@ public class CDPSplit : ICDPReader {
 
 
         foreach (KeyValuePair<int, List<string>> entry in groups) {
-            Dictionary<string, Dictionary<double, double>> values = this.partitions[entry.Key].GetRange(entry.Value, from, to);
+            Dictionary<string, Dictionary<long, double>> values = this.partitions[entry.Key].GetRange(entry.Value, from, to);
             values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
         }
 
@@ -127,7 +127,7 @@ public class CDPSplit : ICDPReader {
 
     public Range GetBounds()
     {
-        List<double> bounds = new List<double>();
+        List<long> bounds = new List<long>();
 
         foreach (KeyValuePair<int, Unpacker> entry in this.partitions) {
             Range partitionBounds = entry.Value.GetBounds();
@@ -135,6 +135,20 @@ public class CDPSplit : ICDPReader {
             bounds.Add(partitionBounds.to);
         }
 
-        return new Range(bounds.Min<double>(), bounds.Max<double>());
+        return new Range(bounds.Min<long>(), bounds.Max<long>());
+    }
+
+    public void Open()
+    {
+        foreach (KeyValuePair<int, Unpacker> entry in this.partitions) {
+            entry.Value.Open();
+        }
+    }
+
+    public void Close()
+    {
+        foreach (KeyValuePair<int, Unpacker> entry in this.partitions) {
+            entry.Value.Close();
+        }
     }
 }

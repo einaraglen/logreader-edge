@@ -1,8 +1,8 @@
 public class Range {
-    public double from { get; set; }
-    public double to { get; set; }
+    public long from { get; set; }
+    public long to { get; set; }
 
-    public Range(double from, double to) {
+    public Range(long from, long to) {
         this.from = from;
         this.to = to;
     }

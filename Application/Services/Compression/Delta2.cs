@@ -1,17 +1,16 @@
 namespace Services.Compression;
 
 public class Delta2 {
-    public static long[] Encode(Dictionary <double, double> input) {
-    long[] values = input.Select(x => Convert.ToInt64(x.Key)).ToArray();
-    long[] compressed = new long[values.Length];
+    public static long[] Encode(long[] input) {
+    long[] compressed = new long[input.Length];
 
-   compressed[0] = values[0];
-    long last = values[1] - values[0];
+   compressed[0] = input[0];
+    long last = input[1] - input[0];
     compressed[1] = last;
     
     int i = 2;
-    while (i < values.Length) {
-      long delta = values[i] - values[i-1];
+    while (i < input.Length) {
+      long delta = input[i] - input[i-1];
       long delta2 = delta - last;
       compressed[i] = delta2;
       last = delta;

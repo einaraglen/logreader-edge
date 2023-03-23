@@ -9,12 +9,12 @@ public class CDPCompact : ICDPReader
         this.unpacker = new Unpacker(file, CDPDataStore.Compact);
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
     {
         return this.unpacker.GetLastKeyframes(signals, changes);
     }
 
-    public Dictionary<string, Dictionary<double, double>> GetRange(List<string> signals, long from, long to)
+    public Dictionary<string, Dictionary<long, double>> GetRange(List<string> signals, long from, long to)
     {
         return this.unpacker.GetRange(signals, from, to);
     }
@@ -27,5 +27,15 @@ public class CDPCompact : ICDPReader
     public Range GetBounds()
     {
         return this.unpacker.GetBounds();
+    }
+
+    public void Open()
+    {
+       this.unpacker.Open();
+    }
+
+    public void Close()
+    {
+        this.unpacker.Close();
     }
 }
