@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-option csharp_namespace = "Models.Proto";
-
-message ChangesRequest {
-  repeated string signals = 1;
-  int64 changes = 2;
-}

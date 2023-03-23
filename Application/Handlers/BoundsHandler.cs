@@ -1,6 +1,6 @@
-using Models.Proto;
 using CDP;
 using Google.Protobuf;
+using LogReaderLibrary.Models.Proto;
 using LogReaderLibrary.MQTT.Handler;
 using LogReaderLibrary.MQTT.Message;
 

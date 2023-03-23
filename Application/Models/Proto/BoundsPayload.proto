@@ -1,8 +1,0 @@
-syntax = "proto3";
-
-option csharp_namespace = "Models.Proto";
-
-message BoundsPayload {
-  double from = 1;
-  double to = 2;
-}

@@ -1,7 +1,7 @@
 using System.IO.Compression;
 using CDP;
 using Google.Protobuf;
-using Models.Proto;
+using LogReaderLibrary.Models.Proto;
 using LogReaderLibrary.Compression;
 
 namespace Application.Tests;

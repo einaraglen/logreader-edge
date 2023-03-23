@@ -1,5 +1,6 @@
 using CDP;
-using Models.Proto;
+using LogReaderLibrary.Models.Proto;
+
 
 public class SignalMetadata
 {
