@@ -10,6 +10,8 @@ class Application
 
             ExtractorSingleton.Instance.Extractor.Load();
 
+            var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+
             var requests = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$");
 
             requests
@@ -22,11 +24,11 @@ class Application
             MQTTClientSingleton.Instance.AddMessageReceiver(requests.OnMessageReceived);
 
             MQTTClientSingleton.Instance
-            .Subscribe($"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetRange")
-            .Subscribe($"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetChanges")
-            .Subscribe($"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds")
-            .Subscribe($"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
-            .Subscribe($"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
+            .Subscribe($"Edge/Request/{client}/GetRange")
+            .Subscribe($"Edge/Request/{client}/GetChanges")
+            .Subscribe($"Edge/Request/{client}/GetBounds")
+            .Subscribe($"Edge/Request/{client}/GetCount")
+            .Subscribe($"Edge/Request/{client}/GetSignals")
             .Complete();
 
             Console.ReadLine();
