@@ -1,11 +1,12 @@
 using Models.Proto;
 using CDP;
-using MQTTnet;
 using Google.Protobuf;
+using MQTT.Handler;
+using MQTT.Message;
 
 public class CountHandler : IHandler
 {
-    public void OnMessage(string id, byte[] bytes)
+    public async Task OnMessage(string id, byte[] bytes)
     {
         try
         {
@@ -27,18 +28,15 @@ public class CountHandler : IHandler
                 payload.WriteTo(stream);
                 var serialized = stream.ToArray();
 
-                MqttApplicationMessage message = message = new MqttApplicationMessageBuilder()
-                        .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
-                        .WithPayload(serialized)
-                        .Build();
-
-                MQTTClientSingleton.Instance.Client.PublishAsync(message).Wait();
+                await new MessageBuilder()
+                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
+                    .WithPayload(serialized)
+                    .Publish();
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Failed to Handle Count request: \n{ex}");
         }
-
     }
 }

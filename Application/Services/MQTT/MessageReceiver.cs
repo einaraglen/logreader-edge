@@ -1,5 +1,8 @@
 using System.Text.RegularExpressions;
+using MQTT.Handler;
 using MQTTnet.Client;
+
+namespace MQTT.Message;
 
 public class MessageReceiver
 {
@@ -16,7 +19,7 @@ public class MessageReceiver
         this.handlers = new Dictionary<string, IHandler>();
     }
 
-    public MessageReceiver AddHandler(string endpoint, IHandler handler) {
+    public MessageReceiver WithHandler(string endpoint, IHandler handler) {
         this.handlers.Add(endpoint, handler);
         return this;
     }

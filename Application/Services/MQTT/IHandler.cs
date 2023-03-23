@@ -1,3 +1,5 @@
+namespace MQTT.Handler;
+
 public interface IHandler {
-    void OnMessage(string id, byte[] bytes);
+    Task OnMessage(string id, byte[] bytes);
 }

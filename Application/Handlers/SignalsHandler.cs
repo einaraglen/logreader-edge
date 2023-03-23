@@ -1,11 +1,12 @@
 using Models.Proto;
 using CDP;
-using MQTTnet;
 using Google.Protobuf;
+using MQTT.Handler;
+using MQTT.Message;
 
 public class SignalsHandler : IHandler
 {
-    public void OnMessage(string id, byte[] bytes)
+    public async Task OnMessage(string id, byte[] bytes)
     {
         try
         {
@@ -21,12 +22,10 @@ public class SignalsHandler : IHandler
                 payload.WriteTo(stream);
                 var serialized = stream.ToArray();
 
-                MqttApplicationMessage message = message = new MqttApplicationMessageBuilder()
-                        .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
-                        .WithPayload(serialized)
-                        .Build();
-
-                MQTTClientSingleton.Instance.Client.PublishAsync(message).Wait();
+                await new MessageBuilder()
+                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
+                    .WithPayload(serialized)
+                    .Publish();
             }
         }
         catch (Exception ex)

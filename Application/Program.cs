@@ -1,4 +1,6 @@
 ﻿using CDP;
+using MQTT;
+using MQTT.Message;
 
 class Application
 {
@@ -8,28 +10,31 @@ class Application
         {
             DotEnv.Load(new string[] { "LOG_DIRECTORY", "MQTT_CLIENT_ID", "MQTT_ADDRESS", "MQTT_PORT" });
 
+            var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+            var address = Environment.GetEnvironmentVariable("MQTT_ADDRESS")!;
+            var port = Environment.GetEnvironmentVariable("MQTT_PORT")!;
+
             ExtractorSingleton.Instance.Extractor.Load();
 
-            var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+            MQTTClientSingleton.Instance.Connect(client, address, port);
 
-            var requests = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$");
 
-            requests
-            .AddHandler("GetRange", new RangeHandler())
-            .AddHandler("GetChanges", new ChangesHandler())
-            .AddHandler("GetBounds", new BoundsHandler())
-            .AddHandler("GetCount", new CountHandler())
-            .AddHandler("GetSignals", new SignalsHandler());
+            var requests = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$")
+            .WithHandler("GetRange", new RangeHandler())
+            .WithHandler("GetChanges", new ChangesHandler())
+            .WithHandler("GetBounds", new BoundsHandler())
+            .WithHandler("GetCount", new CountHandler())
+            .WithHandler("GetSignals", new SignalsHandler());
 
             MQTTClientSingleton.Instance.AddMessageReceiver(requests.OnMessageReceived);
 
             MQTTClientSingleton.Instance
-            .Subscribe($"Edge/Request/{client}/GetRange")
-            .Subscribe($"Edge/Request/{client}/GetChanges")
-            .Subscribe($"Edge/Request/{client}/GetBounds")
-            .Subscribe($"Edge/Request/{client}/GetCount")
-            .Subscribe($"Edge/Request/{client}/GetSignals")
-            .Complete();
+            .WithListener($"Edge/Request/{client}/GetRange")
+            .WithListener($"Edge/Request/{client}/GetChanges")
+            .WithListener($"Edge/Request/{client}/GetBounds")
+            .WithListener($"Edge/Request/{client}/GetCount")
+            .WithListener($"Edge/Request/{client}/GetSignals")
+            .Subscribe();
 
             Console.ReadLine();
         }
@@ -39,8 +44,8 @@ class Application
         }
         finally
         {
-           MQTTClientSingleton.Instance.Disconnect();
-           ExtractorSingleton.Instance.Extractor.Close();
+            MQTTClientSingleton.Instance.Disconnect();
+            ExtractorSingleton.Instance.Extractor.Close();
         }
     }
 }
