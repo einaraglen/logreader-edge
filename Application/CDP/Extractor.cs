@@ -58,6 +58,16 @@ public class Extractor : ICDPReader
         return this.reader.GetRange(signals, from, to);
     }
 
+    public Dictionary<string, long> GetCount(List<string> signals, long from, long to)
+    {
+        if (this.reader == null)
+        {
+            throw new InvalidOperationException("Cannot use Extractor before loading database");
+        }
+
+        return this.reader.GetCount(signals, from, to);
+    }
+
     public List<SignalMetadata> GetSignals()
     {
         if (this.reader == null)

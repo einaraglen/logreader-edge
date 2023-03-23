@@ -19,6 +19,11 @@ public class CDPCompact : ICDPReader
         return this.unpacker.GetRange(signals, from, to);
     }
 
+    public Dictionary<string, long> GetCount(List<string> signals, long from, long to)
+    {
+        return this.unpacker.GetCount(signals, from, to);
+    }
+
     public List<SignalMetadata> GetSignals()
     {
         return this.unpacker.signals.Select(x => x.Value).ToList();

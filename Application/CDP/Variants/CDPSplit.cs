@@ -110,12 +110,31 @@ public class CDPSplit : ICDPReader {
             groups[partition] = group;
         }
 
-
         foreach (KeyValuePair<int, List<string>> entry in groups) {
             Dictionary<string, Dictionary<long, double>> values = this.partitions[entry.Key].GetRange(entry.Value, from, to);
             values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
         }
 
+        return collection;
+    }
+
+    public Dictionary<string, long> GetCount(List<string> signals, long from, long to)
+    {
+        Dictionary<string, long> collection = new Dictionary<string, long>();
+        Dictionary<int, List<string>> groups = new Dictionary<int, List<string>>();
+
+        foreach (string signal in signals) {
+            int partition = this.dictionary[signal];
+            List<string> group = groups.ContainsKey(partition) ? groups[partition] : new List<string>();
+            group.Add(signal);
+            groups[partition] = group;
+        }
+
+
+        foreach (KeyValuePair<int, List<string>> entry in groups) {
+            Dictionary<string, long> values = this.partitions[entry.Key].GetCount(entry.Value, from, to);
+            values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
+        }
 
         return collection;
     }

@@ -108,7 +108,8 @@ public class CDPBasic : ICDPReader
         return String.Join(", ", signals);
     }
 
-    private double GetBound(string variant) {
+    private double GetBound(string variant)
+    {
         SqliteCommand command = connection.CreateCommand();
         command.CommandText = $"SELECT {variant}(timestamp) FROM {this.GetTable()}";
 
@@ -122,6 +123,27 @@ public class CDPBasic : ICDPReader
         }
 
         return value * 1000;
+    }
+
+    public Dictionary<string, long> GetCount(List<string> signals, long from, long to)
+    {
+        SqliteCommand command = connection.CreateCommand();
+
+        string min = Utils.DoubleToString(from / 1000.0);
+        string max = Utils.DoubleToString(to / 1000.0);
+
+        command.CommandText = $"SELECT COUNT(*) FROM {this.GetTable()} WHERE timestamp BETWEEN {min} AND {max}";
+
+        SqliteDataReader reader = command.ExecuteReader();
+
+        long value = 0;
+
+        while (reader.Read())
+        {
+            value = reader.GetInt64(0);
+        }
+
+        return signals.ToDictionary(x => x, v => value);
     }
 
     public Range GetBounds()

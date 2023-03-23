@@ -34,6 +34,37 @@ public class Unpacker
         }
     }
 
+    public Dictionary<string, long> GetCount(List<string> signals, long from, long to)
+    {
+        SqliteCommand command = connection.CreateCommand();
+
+        string min = Utils.DoubleToString(from / 1000.0);
+        string max = Utils.DoubleToString(to / 1000.0);
+
+        Console.WriteLine($"Searching in range {min}, {max}");
+
+        command.CommandText = $"SELECT * FROM {this.GetBlobTable()} WHERE x_axis BETWEEN {min} AND {max}";
+
+        SqliteDataReader reader = command.ExecuteReader();
+
+        Dictionary<string, long> collection = new Dictionary<string, long>();
+
+        while (reader.Read())
+        {
+            long timestamp = (long)(reader.GetDouble(0) * 1000);
+            Stream stream = reader.GetStream(1);
+
+            KeyValuePair<string, double>? unpacked = this.type == CDPDataStore.Split ? this.UnpackSplit(stream, signals) : this.UnpackCompact(stream, signals);
+
+            if (unpacked != null)
+            {
+                collection[unpacked.Value.Key] = collection.ContainsKey(unpacked.Value.Key) ? collection[unpacked.Value.Key] + 1 : 1;
+            }
+        }
+
+        return collection;
+    }
+
     public Dictionary<string, Dictionary<long, double>> GetLastKeyframes(List<string> signals, long frames)
     {
         SqliteCommand command = connection.CreateCommand();
@@ -111,13 +142,13 @@ public class Unpacker
             long timestamp = (long)(reader.GetDouble(0) * 1000);
             Stream stream = reader.GetStream(1);
 
-            if (this.type == CDPDataStore.Split)
+            KeyValuePair<string, double>? unpacked = this.type == CDPDataStore.Split ? this.UnpackSplit(stream, signals) : this.UnpackCompact(stream, signals);
+
+            if (unpacked != null)
             {
-                this.UnpackSplit(stream, signals, timestamp, collection);
-            }
-            else
-            {
-                this.UnpackCompact(stream, signals, timestamp, collection);
+                Dictionary<long, double> values = collection.ContainsKey(unpacked.Value.Key) ? collection[unpacked.Value.Key] : new Dictionary<long, double>();
+                values.Add(timestamp, unpacked.Value.Value);
+                collection[unpacked.Value.Key] = values;
             }
         }
 
@@ -134,7 +165,7 @@ public class Unpacker
 
 
 
-    private void UnpackSplit(Stream stream, List<string> signals, long timestamp, Dictionary<string, Dictionary<long, double>> collection)
+    private KeyValuePair<string, double>? UnpackSplit(Stream stream, List<string> signals)
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
@@ -144,20 +175,19 @@ public class Unpacker
 
             if (!signals.Contains(signal.name))
             {
-                return;
+                reader.Close();
+                return null;
             }
 
             CDPDataType type = Blob.GetType(reader);
 
             double value = Blob.GetValue(reader, type);
 
-            Dictionary<long, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<long, double>();
-            values.Add(timestamp, value);
-            collection[signal.name] = values;
+            return new KeyValuePair<string, double>(signal.name, value);
         }
     }
 
-    private void UnpackCompact(Stream stream, List<string> signals, long timestamp, Dictionary<string, Dictionary<long, double>> collection)
+    private KeyValuePair<string, double>? UnpackCompact(Stream stream, List<string> signals)
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
@@ -167,14 +197,13 @@ public class Unpacker
 
             if (!signals.Contains(signal.name))
             {
-                return;
+                reader.Close();
+                return null;
             }
 
             double value = Blob.GetValue(reader, signal.Type());
 
-            Dictionary<long, double> values = collection.ContainsKey(signal.name) ? collection[signal.name] : new Dictionary<long, double>();
-            values.Add(timestamp, value);
-            collection[signal.name] = values;
+            return new KeyValuePair<string, double>(signal.name, value);
         }
     }
 
@@ -219,11 +248,13 @@ public class Unpacker
         return this.type == CDPDataStore.Split ? "Node" : "SignalMap";
     }
 
-    public void Open() {
+    public void Open()
+    {
         this.connection.Open();
     }
 
-     public void Close() {
+    public void Close()
+    {
         this.connection.Close();
     }
 }
