@@ -1,6 +1,7 @@
 ﻿using CDP;
-using MQTT;
-using MQTT.Message;
+using LogReaderLibrary.DotEnv;
+using LogReaderLibrary.MQTT;
+using LogReaderLibrary.MQTT.Message;
 
 class Application
 {

@@ -12,6 +12,9 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.4" />
     <PackageReference Include="MQTTnet" Version="4.1.4.563" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.1.4.563" />
+     <Reference Include="LogReaderLibrary">
+       <HintPath>..\lib\LogReaderLibrary.dll</HintPath>
+     </Reference>
   </ItemGroup>
 
 </Project>

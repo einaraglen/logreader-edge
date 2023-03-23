@@ -1,9 +1,9 @@
-using Services.Compression;
 using Models.Proto;
 using CDP;
 using Google.Protobuf;
-using MQTT.Handler;
-using MQTT.Message;
+using LogReaderLibrary.Compression;
+using LogReaderLibrary.MQTT.Handler;
+using LogReaderLibrary.MQTT.Message;
 
 public class RangeHandler : IHandler
 {
