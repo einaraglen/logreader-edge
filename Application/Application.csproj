@@ -5,6 +5,9 @@
     <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Version>0.1.0</Version>
+    <AssemblyName>logreader-edge-$(Version)</AssemblyName>
+    <OutputName>logreader-edge-$(Version)</OutputName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +16,7 @@
     <PackageReference Include="MQTTnet" Version="4.1.4.563" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.1.4.563" />
      <Reference Include="LogReaderLibrary">
-       <HintPath>..\lib\logreader-lib-0.1.2.dll</HintPath>
+       <HintPath>..\lib\logreader-lib-0.1.5.dll</HintPath>
      </Reference>
   </ItemGroup>
 

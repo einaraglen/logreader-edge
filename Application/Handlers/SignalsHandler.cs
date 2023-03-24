@@ -6,11 +6,11 @@ using LogReaderLibrary.MQTT.Message;
 
 public class SignalsHandler : IHandler
 {
-    public async Task OnMessage(string id, byte[] bytes)
+    public async Task OnMessage(string id, byte[] bytes, string? correlation)
     {
         try
         {
-            Console.WriteLine("Handling Signals Request");
+            Console.WriteLine($"Handling Signals Request with correlation: {correlation}");
             List<SignalMetadata> signals = ExtractorSingleton.Instance.Extractor.GetSignals();
 
             SignalsPayload payload = new SignalsPayload();
@@ -22,10 +22,17 @@ public class SignalsHandler : IHandler
                 payload.WriteTo(stream);
                 var serialized = stream.ToArray();
 
-                await new MessageBuilder()
+                var message = new MessageBuilder()
                     .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
                     .WithPayload(serialized)
-                    .Publish();
+                    .WithCorrelation(correlation);
+
+                if (correlation != null)
+                {
+                    message.WithCorrelation(correlation);
+                }
+
+                await message.Publish();
             }
         }
         catch (Exception ex)

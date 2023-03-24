@@ -17,17 +17,17 @@ class Application
 
             ExtractorSingleton.Instance.Extractor.Load();
 
-            MQTTClientSingleton.Instance.Connect(client, address, port);
+            MQTTClientSingleton.Instance.Connect($"RemoteEdge@{client}", address, port);
 
 
-            var requests = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$")
+            var receiver = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$")
             .WithHandler("GetRange", new RangeHandler())
             .WithHandler("GetChanges", new ChangesHandler())
             .WithHandler("GetBounds", new BoundsHandler())
             .WithHandler("GetCount", new CountHandler())
             .WithHandler("GetSignals", new SignalsHandler());
 
-            MQTTClientSingleton.Instance.AddMessageReceiver(requests.OnMessageReceived);
+            MQTTClientSingleton.Instance.AddMessageReceiver(receiver.OnMessageReceived);
 
             MQTTClientSingleton.Instance
             .WithListener($"Edge/Request/{client}/GetRange")
@@ -37,7 +37,7 @@ class Application
             .WithListener($"Edge/Request/{client}/GetSignals")
             .Subscribe();
 
-            Console.ReadLine();
+            Console.Read();
         }
         catch (Exception ex)
         {

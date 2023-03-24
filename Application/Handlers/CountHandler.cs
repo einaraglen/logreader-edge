@@ -6,7 +6,7 @@ using LogReaderLibrary.MQTT.Message;
 
 public class CountHandler : IHandler
 {
-    public async Task OnMessage(string id, byte[] bytes)
+    public async Task OnMessage(string id, byte[] bytes, string? correlation)
     {
         try
         {
@@ -31,6 +31,7 @@ public class CountHandler : IHandler
                 await new MessageBuilder()
                     .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
                     .WithPayload(serialized)
+                    .WithCorrelation(correlation)
                     .Publish();
             }
         }

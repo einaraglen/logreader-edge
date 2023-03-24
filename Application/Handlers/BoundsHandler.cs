@@ -6,7 +6,7 @@ using LogReaderLibrary.MQTT.Message;
 
 public class BoundsHandler : IHandler
 {
-    public async Task OnMessage(string id, byte[] bytes)
+    public async Task OnMessage(string id, byte[] bytes, string? correlation)
     {
         try
         {
@@ -27,6 +27,7 @@ public class BoundsHandler : IHandler
                 await new MessageBuilder()
                 .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds")
                 .WithPayload(serialized)
+                .WithCorrelation(correlation)
                 .Publish();
             }
         }
