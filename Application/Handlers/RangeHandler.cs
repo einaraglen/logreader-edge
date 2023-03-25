@@ -1,22 +1,34 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto;
 using LogReaderLibrary.Compression;
-using LogReaderLibrary.MQTT.Handler;
+using LogReaderLibrary.Models.Proto.Timeseries;
+using LogReaderLibrary.MQTT;
 using LogReaderLibrary.MQTT.Message;
+using MQTTnet.Client;
 
-public class RangeHandler : IHandler
+public class RangeHandler : IMessageReceiver
 {
-    public async Task OnMessage(string id, byte[] bytes, string? correlation)
+    private string TOPIC;
+    public RangeHandler()
+    {
+        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetRange";
+    }
+    public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
         try
         {
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC)) {
+                return;
+            }
+            
+            var correlation = MQTTUtils.GetCorrelation(args);
+
             Console.WriteLine("Handling Range Request");
-            RangeRequest data = RangeRequest.Parser.ParseFrom(bytes);
+            RangeRequest data = RangeRequest.Parser.ParseFrom(MQTTUtils.GetPayload(args));
 
             var collection = ExtractorSingleton.Instance.Extractor.GetRange(data.Signals.ToList(), (long)data.From, (long)data.To);
 
-            DataPayload payload = new DataPayload();
+            CompressedTimeseriesPayload payload = new CompressedTimeseriesPayload();
 
             string[] names = collection.Select(x => x.Key).ToArray();
 
@@ -47,7 +59,8 @@ public class RangeHandler : IHandler
                     .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetRange")
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
-                    .Publish();
+                    .Publish()
+                    .ConfigureAwait(false);
             }
         }
         catch (Exception ex)

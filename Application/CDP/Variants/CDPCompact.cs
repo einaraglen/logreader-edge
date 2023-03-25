@@ -9,7 +9,7 @@ public class CDPCompact : ICDPReader
         this.unpacker = new Unpacker(file, CDPDataStore.Compact);
     }
 
-    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetLast(List<string> signals, long changes)
     {
         return this.unpacker.GetLastKeyframes(signals, changes);
     }

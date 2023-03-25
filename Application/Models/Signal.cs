@@ -1,6 +1,5 @@
 using CDP;
-using LogReaderLibrary.Models.Proto;
-
+using LogReaderLibrary.Models.Proto.Metadata;
 
 public class SignalMetadata
 {
@@ -9,7 +8,7 @@ public class SignalMetadata
     public string? type;
     public string? path;
 
-    public SignalMetadata(int id, string name, string? type, string? path)
+    public SignalMetadata(int id, string name, string? path, string? type)
     {
         this.id = id;
         this.name = name;
@@ -19,6 +18,7 @@ public class SignalMetadata
 
     public Signal GetFormatted()
     {
+        // Console.WriteLine($"{this.name} has path {this.path == null}");
         if (this.path == null)
         {
             return new Signal

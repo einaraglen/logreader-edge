@@ -25,7 +25,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <Reference Include="LogReaderLibrary">
-       <HintPath>..\lib\logreader-lib-0.1.2.dll</HintPath>
+       <HintPath>..\lib\logreader-lib-0.1.6.dll</HintPath>
      </Reference>
   </ItemGroup>
 

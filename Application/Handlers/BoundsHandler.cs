@@ -1,15 +1,27 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto;
-using LogReaderLibrary.MQTT.Handler;
+using LogReaderLibrary.Models.Proto.Timeseries;
+using LogReaderLibrary.MQTT;
 using LogReaderLibrary.MQTT.Message;
+using MQTTnet.Client;
 
-public class BoundsHandler : IHandler
+public class BoundsHandler : IMessageReceiver
 {
-    public async Task OnMessage(string id, byte[] bytes, string? correlation)
+    private string TOPIC;
+
+    public BoundsHandler() {
+        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds";
+    }
+    public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
         try
         {
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC)) {
+                return;
+            }
+            
+            var correlation = MQTTUtils.GetCorrelation(args);
+
             Console.WriteLine("Handling Bounds Request");
             Range bounds = ExtractorSingleton.Instance.Extractor.GetBounds();
 
@@ -25,10 +37,11 @@ public class BoundsHandler : IHandler
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds")
-                .WithPayload(serialized)
-                .WithCorrelation(correlation)
-                .Publish();
+                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds")
+                    .WithPayload(serialized)
+                    .WithCorrelation(correlation)
+                    .Publish()
+                    .ConfigureAwait(false);
             }
         }
         catch (Exception ex)

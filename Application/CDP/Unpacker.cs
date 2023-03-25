@@ -29,7 +29,7 @@ public class Unpacker
 
         while (reader.Read())
         {
-            SignalMetadata metadata = new SignalMetadata(reader.GetInt16(0), reader.GetString(1), reader.GetString(2), reader.GetString(3));
+            SignalMetadata metadata = new SignalMetadata(reader.GetInt16(0), reader.GetString(1), reader.GetString(3), reader.GetString(2));
             this.signals[metadata.id] = metadata;
         }
     }
@@ -84,7 +84,7 @@ public class Unpacker
                 string name = signals[i];
                 Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = Convert.ToDouble(reader.GetString(i + 1), CultureInfo.InvariantCulture);
-                values.Add(timestamp, value);
+                values[timestamp] = value;
                 collection[name] = values;
             }
         }
@@ -114,7 +114,7 @@ public class Unpacker
                 string name = signals[i];
                 Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
-                values.Add(timestamp, value);
+                values[timestamp] = value;
                 collection[name] = values;
             }
         }
@@ -128,8 +128,6 @@ public class Unpacker
 
         string min = Utils.DoubleToString(from / 1000.0);
         string max = Utils.DoubleToString(to / 1000.0);
-
-        Console.WriteLine($"Searching in range {min}, {max}");
 
         command.CommandText = $"SELECT * FROM {this.GetBlobTable()} WHERE x_axis BETWEEN {min} AND {max}";
 
@@ -147,7 +145,7 @@ public class Unpacker
             if (unpacked != null)
             {
                 Dictionary<long, double> values = collection.ContainsKey(unpacked.Value.Key) ? collection[unpacked.Value.Key] : new Dictionary<long, double>();
-                values.Add(timestamp, unpacked.Value.Value);
+                values[timestamp] = unpacked.Value.Value;
                 collection[unpacked.Value.Key] = values;
             }
         }
@@ -155,10 +153,8 @@ public class Unpacker
         List<string> completed = collection.Select(x => x.Key).ToList();
         List<string> missing = signals.Where(signal => !completed.Contains(signal)).ToList();
 
-        Console.WriteLine($"Missing {missing.Count} signals in range result");
-
         Dictionary<string, Dictionary<long, double>> last = this.GetRangeKeyframes(missing, from, to);
-        last.ToList().ForEach(x => collection.Add(x.Key, x.Value));
+        last.ToList().ForEach(x => collection[x.Key] = x.Value);
 
         return collection;
     }
@@ -172,6 +168,8 @@ public class Unpacker
             int id = Blob.GetSignal(reader);
 
             SignalMetadata signal = this.signals[id];
+
+            Console.WriteLine($"Unpacked {signal.path}");
 
             if (!signals.Contains(signal.name))
             {

@@ -38,14 +38,14 @@ public class Extractor : ICDPReader
         }
     }
 
-    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetLast(List<string> signals, long changes)
     {
         if (this.reader == null)
         {
             throw new InvalidOperationException("Cannot use Extractor before loading database");
         }
 
-        return this.reader.GetChanges(signals, changes);
+        return this.reader.GetLast(signals, changes);
     }
 
     public Dictionary<string, Dictionary<long, double>> GetRange(List<string> signals, long from, long to)

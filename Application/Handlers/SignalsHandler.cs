@@ -1,16 +1,29 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto;
-using LogReaderLibrary.MQTT.Handler;
+using LogReaderLibrary.Models.Proto.Metadata;
+using LogReaderLibrary.MQTT;
 using LogReaderLibrary.MQTT.Message;
+using MQTTnet.Client;
 
-public class SignalsHandler : IHandler
+public class SignalsHandler : IMessageReceiver
 {
-    public async Task OnMessage(string id, byte[] bytes, string? correlation)
+    private string TOPIC;
+    public SignalsHandler()
+    {
+        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals";
+    }
+    public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
         try
         {
-            Console.WriteLine($"Handling Signals Request with correlation: {correlation}");
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC))
+            {
+                return;
+            }
+
+            var correlation = MQTTUtils.GetCorrelation(args);
+
+            Console.WriteLine("Handling Signals Request");
             List<SignalMetadata> signals = ExtractorSingleton.Instance.Extractor.GetSignals();
 
             SignalsPayload payload = new SignalsPayload();
@@ -22,17 +35,12 @@ public class SignalsHandler : IHandler
                 payload.WriteTo(stream);
                 var serialized = stream.ToArray();
 
-                var message = new MessageBuilder()
+                await new MessageBuilder()
                     .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
                     .WithPayload(serialized)
-                    .WithCorrelation(correlation);
-
-                if (correlation != null)
-                {
-                    message.WithCorrelation(correlation);
-                }
-
-                await message.Publish();
+                    .WithCorrelation(correlation)
+                    .Publish()
+                    .ConfigureAwait(false);
             }
         }
         catch (Exception ex)

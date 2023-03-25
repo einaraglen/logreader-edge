@@ -20,7 +20,7 @@ public class CDPBasic : ICDPReader
         return this.type == CDPDataStore.Basic ? "SQLSignalLogger" : "SQLSignalLogger2";
     }
 
-    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetLast(List<string> signals, long changes)
     {
 
         SqliteCommand command = connection.CreateCommand();
@@ -40,7 +40,7 @@ public class CDPBasic : ICDPReader
                 string name = signals[i];
                 Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
-                values.Add(timestamp, value);
+                values[timestamp] =value;
                 collection[name] = values;
             }
         }
@@ -70,7 +70,7 @@ public class CDPBasic : ICDPReader
                 string name = signals[i];
                 Dictionary<long, double> values = collection.ContainsKey(name) ? collection[name] : new Dictionary<long, double>();
                 double value = reader.GetDouble(i + 1);
-                values.Add(timestamp, value);
+                values[timestamp] = value;
                 collection[name] = values;
             }
         }

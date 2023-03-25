@@ -1,7 +1,6 @@
 ﻿using CDP;
 using LogReaderLibrary.DotEnv;
 using LogReaderLibrary.MQTT;
-using LogReaderLibrary.MQTT.Message;
 
 class Application
 {
@@ -19,23 +18,20 @@ class Application
 
             MQTTClientSingleton.Instance.Connect($"RemoteEdge@{client}", address, port);
 
-
-            var receiver = new MessageReceiver("^Edge/Request/(?<id>[^/]+)/(?<endpoint>[^/]+)?$")
-            .WithHandler("GetRange", new RangeHandler())
-            .WithHandler("GetChanges", new ChangesHandler())
-            .WithHandler("GetBounds", new BoundsHandler())
-            .WithHandler("GetCount", new CountHandler())
-            .WithHandler("GetSignals", new SignalsHandler());
-
-            MQTTClientSingleton.Instance.AddMessageReceiver(receiver.OnMessageReceived);
+            MQTTClientSingleton.Instance
+            .AddTopic($"Edge/Request/{client}/GetRange")
+            .AddTopic($"Edge/Request/{client}/GetLast")
+            .AddTopic($"Edge/Request/{client}/GetBounds")
+            .AddTopic($"Edge/Request/{client}/GetCount")
+            .AddTopic($"Edge/Request/{client}/GetSignals");
 
             MQTTClientSingleton.Instance
-            .WithListener($"Edge/Request/{client}/GetRange")
-            .WithListener($"Edge/Request/{client}/GetChanges")
-            .WithListener($"Edge/Request/{client}/GetBounds")
-            .WithListener($"Edge/Request/{client}/GetCount")
-            .WithListener($"Edge/Request/{client}/GetSignals")
-            .Subscribe();
+            .AddMessageReceiver(new BoundsHandler())
+            .AddMessageReceiver(new CountHandler())
+            .AddMessageReceiver(new RangeHandler())
+            .AddMessageReceiver(new SignalsHandler())
+            .AddMessageReceiver(new LastHandler());
+
 
             Console.Read();
         }

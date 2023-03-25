@@ -1,17 +1,29 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto;
-using LogReaderLibrary.MQTT.Handler;
+using LogReaderLibrary.Models.Proto.Metadata;
+using LogReaderLibrary.Models.Proto.Timeseries;
+using LogReaderLibrary.MQTT;
 using LogReaderLibrary.MQTT.Message;
+using MQTTnet.Client;
 
-public class CountHandler : IHandler
+public class CountHandler : IMessageReceiver
 {
-    public async Task OnMessage(string id, byte[] bytes, string? correlation)
+    private string TOPIC;
+    public CountHandler() {
+        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount";
+    }
+    public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
         try
         {
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC)) {
+                return;
+            }
+            
+            var correlation = MQTTUtils.GetCorrelation(args);
+
             Console.WriteLine("Handling Count Request");
-            RangeRequest data = RangeRequest.Parser.ParseFrom(bytes);
+            RangeRequest data = RangeRequest.Parser.ParseFrom(MQTTUtils.GetPayload(args));
 
             var collection = ExtractorSingleton.Instance.Extractor.GetCount(data.Signals.ToList(), (long)data.From, (long)data.To);
 
@@ -32,7 +44,8 @@ public class CountHandler : IHandler
                     .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
-                    .Publish();
+                    .Publish()
+                    .ConfigureAwait(false);
             }
         }
         catch (Exception ex)

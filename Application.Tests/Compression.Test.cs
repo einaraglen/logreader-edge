@@ -1,23 +1,25 @@
 using System.IO.Compression;
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto;
 using LogReaderLibrary.Compression;
+using LogReaderLibrary.Models.Proto.Timeseries;
+
 
 namespace Application.Tests;
 
 public class CompressionTest
 {
-    private string root = "C:/repos/logreader-edge/assets";
+    private string root = "C:/Users/monga/Documents/projects/logreader-edge/assets";
 
     [Fact]
     public void CompressDelta2EncodeDecode()
     {
         Extractor extraction = new Extractor($"{root}/basic");
+        extraction.Load();
 
         var signal = "PT_REDUCED_LOAD_ACCUMULATOR";
 
-        var data = extraction.GetChanges(new List<string> { signal }, 10000);
+        var data = extraction.GetLast(new List<string> { signal }, 10000);
 
         var encoded = Delta2.Encode(data[signal].Select(x => x.Key).ToArray());
 
@@ -30,14 +32,15 @@ public class CompressionTest
     public void CompressDelta2AndProtobuffDecodeEncode()
     {
         Extractor extraction = new Extractor($"{root}/basic");
+        extraction.Load();
 
         var signal = "PT_REDUCED_LOAD_ACCUMULATOR";
 
-        var data = extraction.GetChanges(new List<string> { signal }, 10000);
+        var data = extraction.GetLast(new List<string> { signal }, 10000);
 
         var encoded = Delta2.Encode(data[signal].Select(x => x.Key).ToArray());
 
-        var protobuf = new DataPayload();
+        var protobuf = new CompressedTimeseriesPayload();
 
         var timestamps = new Timestamps();
 
@@ -53,7 +56,7 @@ public class CompressionTest
 
         byte[] bytes = GetByteArrayFromProtobuf(protobuf);
 
-        var fromBytes = DataPayload.Parser.ParseFrom(bytes);
+        var fromBytes = CompressedTimeseriesPayload.Parser.ParseFrom(bytes);
 
         var reproduction = new Dictionary<string, Dictionary<double, double>>();
 
@@ -93,10 +96,11 @@ public class CompressionTest
     public void CompressDelta2SizeComparison()
     {
         Extractor extraction = new Extractor($"{root}/basic");
+        extraction.Load();
 
         var signal = "PT_REDUCED_LOAD_ACCUMULATOR";
 
-        var data = extraction.GetChanges(new List<string> { signal }, 10000);
+        var data = extraction.GetLast(new List<string> { signal }, 10000);
 
         var encoded = Delta2.Encode(data[signal].Select(x => x.Key).ToArray());
 
@@ -108,7 +112,7 @@ public class CompressionTest
         Assert.True(encodedSize < decodedSize, "Compression failed to reduce size");
     }
 
-    private byte[] GetByteArrayFromProtobuf(DataPayload protobuf)
+    private byte[] GetByteArrayFromProtobuf(CompressedTimeseriesPayload protobuf)
     {
         using (var stream = new MemoryStream())
         {

@@ -74,7 +74,7 @@ public class CDPSplit : ICDPReader {
         return Path.Join(dir, $"{filename[0]}{partition}.{filename[1]}");
     }
 
-    public Dictionary<string, Dictionary<long, double>> GetChanges(List<string> signals, long changes)
+    public Dictionary<string, Dictionary<long, double>> GetLast(List<string> signals, long changes)
     {
         Dictionary<string, Dictionary<long, double>> collection = new Dictionary<string, Dictionary<long, double>>();
         Dictionary<int, List<string>> groups = new Dictionary<int, List<string>>();
@@ -91,7 +91,7 @@ public class CDPSplit : ICDPReader {
 
         foreach (KeyValuePair<int, List<string>> entry in groups) {
             Dictionary<string, Dictionary<long, double>> values = this.partitions[entry.Key].GetLastKeyframes(entry.Value, changes);
-            values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
+            values.ToList().ForEach(x => collection[x.Key] = x.Value);
         }
 
 
@@ -112,7 +112,7 @@ public class CDPSplit : ICDPReader {
 
         foreach (KeyValuePair<int, List<string>> entry in groups) {
             Dictionary<string, Dictionary<long, double>> values = this.partitions[entry.Key].GetRange(entry.Value, from, to);
-            values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
+            values.ToList().ForEach(x => collection[x.Key] = x.Value);
         }
 
         return collection;
@@ -133,7 +133,7 @@ public class CDPSplit : ICDPReader {
 
         foreach (KeyValuePair<int, List<string>> entry in groups) {
             Dictionary<string, long> values = this.partitions[entry.Key].GetCount(entry.Value, from, to);
-            values.ToList().ForEach(x => collection.Add(x.Key, x.Value));
+            values.ToList().ForEach(x => collection[x.Key] = x.Value);
         }
 
         return collection;
