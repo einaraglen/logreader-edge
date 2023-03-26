@@ -16,7 +16,7 @@
     <PackageReference Include="MQTTnet" Version="4.1.4.563" />
     <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="4.1.4.563" />
      <Reference Include="LogReaderLibrary">
-       <HintPath>..\lib\logreader-lib-0.1.6.dll</HintPath>
+       <HintPath>..\lib\logreader-lib-0.1.7.dll</HintPath>
      </Reference>
   </ItemGroup>
 

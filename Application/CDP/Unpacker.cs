@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text;
 using Microsoft.Data.Sqlite;
 
 namespace CDP;
@@ -153,8 +154,11 @@ public class Unpacker
         List<string> completed = collection.Select(x => x.Key).ToList();
         List<string> missing = signals.Where(signal => !completed.Contains(signal)).ToList();
 
-        Dictionary<string, Dictionary<long, double>> last = this.GetRangeKeyframes(missing, from, to);
-        last.ToList().ForEach(x => collection[x.Key] = x.Value);
+        if (missing.Count > 0)
+        {
+            Dictionary<string, Dictionary<long, double>> last = this.GetRangeKeyframes(missing, from, to);
+            last.ToList().ForEach(x => collection[x.Key] = x.Value);
+        }
 
         return collection;
     }
@@ -165,11 +169,13 @@ public class Unpacker
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
-            int id = Blob.GetSignal(reader);
+
+            var skip = reader.ReadInt16();
+            var id = reader.ReadInt16();
+            var type = (CDPDataType)reader.ReadByte();
 
             SignalMetadata signal = this.signals[id];
 
-            Console.WriteLine($"Unpacked {signal.path}");
 
             if (!signals.Contains(signal.name))
             {
@@ -177,7 +183,6 @@ public class Unpacker
                 return null;
             }
 
-            CDPDataType type = Blob.GetType(reader);
 
             double value = Blob.GetValue(reader, type);
 
@@ -189,7 +194,8 @@ public class Unpacker
     {
         using (BinaryReader reader = new BinaryReader(stream))
         {
-            int id = Blob.GetSignal(reader);
+            var skip = reader.ReadInt16();
+            var id = reader.ReadInt16();
 
             SignalMetadata signal = this.signals[id];
 

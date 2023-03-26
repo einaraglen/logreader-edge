@@ -31,10 +31,17 @@ public class LastHandler : IMessageReceiver
 
             TimeseriesPayload payload = new TimeseriesPayload();
 
-            foreach (var entry in collection) {
-                TimeseriesValues values = new TimeseriesValues();
-                values.Values.Add(entry.Value);
-                payload.Timeseries.Add(entry.Key, values);
+            foreach (var entry in collection)
+            {
+                TimeseriesValues timeseriesValues = new TimeseriesValues();
+                foreach (var values in entry.Value)
+                {
+                    Timeseries row = new Timeseries();
+                    row.XAxis = values.Key;
+                    row.YAxis = values.Value;
+                    timeseriesValues.Values.Add(row);
+                }
+                payload.Timeseries.Add(entry.Key, timeseriesValues);
             }
 
             using (var stream = new MemoryStream())

@@ -40,7 +40,7 @@ public class Blob
             case CDPDataType.INT64:
                 return (double)reader.ReadInt64();
             case CDPDataType.FLOAT:
-                return (double)reader.ReadDouble();
+                return (double)reader.ReadSingle();
             case CDPDataType.UINT:
                 return (double)reader.ReadUInt16();
             case CDPDataType.INT:
@@ -48,10 +48,6 @@ public class Blob
             case CDPDataType.USHORT:
                 return (double)reader.ReadUInt16();
             case CDPDataType.SHORT:
-                return (double)reader.ReadUInt16();
-            case CDPDataType.UCHAR:
-                return (double)reader.ReadUInt16();
-            case CDPDataType.CHAR:
                 return (double)reader.ReadUInt16();
             case CDPDataType.BOOL:
                 return (double)(reader.ReadBoolean() ? 1 : 0);
