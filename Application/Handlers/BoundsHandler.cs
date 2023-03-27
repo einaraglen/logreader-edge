@@ -1,25 +1,29 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto.Timeseries;
-using LogReaderLibrary.MQTT;
-using LogReaderLibrary.MQTT.Message;
+using SeaBrief.Models.Proto.Timeseries;
+using SeaBrief.MQTT;
+using SeaBrief.MQTT.Message;
 using MQTTnet.Client;
 
 public class BoundsHandler : IMessageReceiver
 {
     private string TOPIC;
 
-    public BoundsHandler() {
-        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds";
+    public BoundsHandler()
+    {
+        var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+        var service = Environment.GetEnvironmentVariable("MQTT_SERVICE_NAME")!;
+        this.TOPIC = $"Edge/{client}/{service}/GetBounds/Request";
     }
     public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
         try
         {
-            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC)) {
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC))
+            {
                 return;
             }
-            
+
             var correlation = MQTTUtils.GetCorrelation(args);
 
             Console.WriteLine("Handling Bounds Request");
@@ -37,7 +41,7 @@ public class BoundsHandler : IMessageReceiver
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetBounds")
+                    .WithTopic(MQTTUtils.GetResponseTopic(this.TOPIC))
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
                     .Publish()

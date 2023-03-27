@@ -1,8 +1,8 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto.Metadata;
-using LogReaderLibrary.MQTT;
-using LogReaderLibrary.MQTT.Message;
+using SeaBrief.Models.Proto.Metadata;
+using SeaBrief.MQTT;
+using SeaBrief.MQTT.Message;
 using MQTTnet.Client;
 
 public class SignalsHandler : IMessageReceiver
@@ -10,7 +10,9 @@ public class SignalsHandler : IMessageReceiver
     private string TOPIC;
     public SignalsHandler()
     {
-        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals";
+        var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+        var service = Environment.GetEnvironmentVariable("MQTT_SERVICE_NAME")!;
+        this.TOPIC = $"Edge/{client}/{service}/GetSignals/Request";
     }
     public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
@@ -36,7 +38,7 @@ public class SignalsHandler : IMessageReceiver
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetSignals")
+                    .WithTopic(MQTTUtils.GetResponseTopic(this.TOPIC))
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
                     .Publish()

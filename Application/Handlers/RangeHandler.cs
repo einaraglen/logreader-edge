@@ -1,9 +1,9 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Compression;
-using LogReaderLibrary.Models.Proto.Timeseries;
-using LogReaderLibrary.MQTT;
-using LogReaderLibrary.MQTT.Message;
+using SeaBrief.Compression;
+using SeaBrief.Models.Proto.Timeseries;
+using SeaBrief.MQTT;
+using SeaBrief.MQTT.Message;
 using MQTTnet.Client;
 
 public class RangeHandler : IMessageReceiver
@@ -11,7 +11,9 @@ public class RangeHandler : IMessageReceiver
     private string TOPIC;
     public RangeHandler()
     {
-        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetRange";
+        var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+        var service = Environment.GetEnvironmentVariable("MQTT_SERVICE_NAME")!;
+        this.TOPIC = $"Edge/{client}/{service}/GetRange/Request";
     }
     public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
@@ -56,7 +58,7 @@ public class RangeHandler : IMessageReceiver
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetRange")
+                    .WithTopic(MQTTUtils.GetResponseTopic(this.TOPIC))
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
                     .Publish()

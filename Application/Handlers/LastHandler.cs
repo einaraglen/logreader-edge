@@ -1,9 +1,8 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto.Timeseries;
-using LogReaderLibrary.Compression;
-using LogReaderLibrary.MQTT.Message;
-using LogReaderLibrary.MQTT;
+using SeaBrief.Models.Proto.Timeseries;
+using SeaBrief.MQTT.Message;
+using SeaBrief.MQTT;
 using MQTTnet.Client;
 
 public class LastHandler : IMessageReceiver
@@ -11,7 +10,9 @@ public class LastHandler : IMessageReceiver
     private string TOPIC;
     public LastHandler()
     {
-        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetLast";
+        var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+        var service = Environment.GetEnvironmentVariable("MQTT_SERVICE_NAME")!;
+        this.TOPIC = $"Edge/{client}/{service}/GetLast/Request";
     }
     public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
@@ -50,7 +51,7 @@ public class LastHandler : IMessageReceiver
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetLast")
+                    .WithTopic(MQTTUtils.GetResponseTopic(this.TOPIC))
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
                     .Publish()

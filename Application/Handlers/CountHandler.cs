@@ -1,16 +1,18 @@
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Models.Proto.Metadata;
-using LogReaderLibrary.Models.Proto.Timeseries;
-using LogReaderLibrary.MQTT;
-using LogReaderLibrary.MQTT.Message;
+using SeaBrief.Models.Proto.Metadata;
+using SeaBrief.Models.Proto.Timeseries;
+using SeaBrief.MQTT;
+using SeaBrief.MQTT.Message;
 using MQTTnet.Client;
 
 public class CountHandler : IMessageReceiver
 {
     private string TOPIC;
     public CountHandler() {
-        this.TOPIC = $"Edge/Request/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount";
+        var client = Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!;
+        var service = Environment.GetEnvironmentVariable("MQTT_SERVICE_NAME")!;
+        this.TOPIC = $"Edge/{client}/{service}/GetCount/Request";
     }
     public async Task OnMessage(MqttApplicationMessageReceivedEventArgs args)
     {
@@ -41,7 +43,7 @@ public class CountHandler : IMessageReceiver
                 var serialized = stream.ToArray();
 
                 await new MessageBuilder()
-                    .WithTopic($"Edge/Response/{Environment.GetEnvironmentVariable("MQTT_CLIENT_ID")!}/GetCount")
+                    .WithTopic(MQTTUtils.GetResponseTopic(this.TOPIC))
                     .WithPayload(serialized)
                     .WithCorrelation(correlation)
                     .Publish()

@@ -1,5 +1,5 @@
 using CDP;
-using LogReaderLibrary.Models.Proto.Metadata;
+using SeaBrief.Models.Proto.Metadata;
 
 public class SignalMetadata
 {
