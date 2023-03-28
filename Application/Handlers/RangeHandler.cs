@@ -19,16 +19,26 @@ public class RangeHandler : IMessageReceiver
     {
         try
         {
-            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC)) {
+            if (!args.ApplicationMessage.Topic.Equals(this.TOPIC))
+            {
                 return;
             }
-            
+
             var correlation = MQTTUtils.GetCorrelation(args);
 
             Console.WriteLine("Handling Range Request");
             RangeRequest data = RangeRequest.Parser.ParseFrom(MQTTUtils.GetPayload(args));
+            // Console.WriteLine($"Interval: {data.From}, {data.To}");
+
+            DateTimeOffset from = DateTimeOffset.FromUnixTimeMilliseconds((long)data.From);
+            DateTimeOffset to = DateTimeOffset.FromUnixTimeMilliseconds((long)data.To);
+                TimeSpan span = to.DateTime - from.DateTime;
+
+            Console.WriteLine($"Requested Duration: {span.TotalSeconds}s");
+
 
             var collection = ExtractorSingleton.Instance.Extractor.GetRange(data.Signals.ToList(), (long)data.From, (long)data.To);
+
 
             CompressedTimeseriesPayload payload = new CompressedTimeseriesPayload();
 
@@ -37,19 +47,22 @@ public class RangeHandler : IMessageReceiver
             foreach (string name in names)
             {
                 var logs = collection[name]!;
-                var timestamps = logs.Select(x => x.Key).ToArray();
-                var encoded = Delta2.Encode(timestamps);
-                var values = logs.Select(x => x.Value).ToArray();
+                if (logs.Count > 0)
+                {
+                    var timestamps = logs.Select(x => x.Key).ToArray();
+                    var encoded = Delta2.Encode(timestamps);
+                    var values = logs.Select(x => x.Value).ToArray();
 
-                Values protoValues = new Values();
-                protoValues.Entries.AddRange(values);
+                    Values protoValues = new Values();
+                    protoValues.Entries.AddRange(values);
 
-                Timestamps protoTimestamps = new Timestamps();
-                protoTimestamps.Entries.AddRange(encoded);
+                    Timestamps protoTimestamps = new Timestamps();
+                    protoTimestamps.Entries.AddRange(encoded);
 
-                payload.Signals.Add(name);
-                payload.Timestamps.Add(protoTimestamps);
-                payload.Values.Add(protoValues);
+                    payload.Signals.Add(name);
+                    payload.Timestamps.Add(protoTimestamps);
+                    payload.Values.Add(protoValues);
+                }
             }
 
             using (var stream = new MemoryStream())
