@@ -17,7 +17,7 @@ class Application
 
             ExtractorSingleton.Instance.Extractor.Load();
 
-            MQTTClientSingleton.Instance.Connect($"RemoteEdge@{client}", address, port);
+            MQTTClientSingleton.Instance.Connect($"RemoteEdge@{client}", address, port, "normal", "thisisnormal");
 
             MQTTClientSingleton.Instance
             .AddTopic($"Edge/{client}/{service}/+/Request");

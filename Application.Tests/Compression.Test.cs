@@ -1,8 +1,8 @@
 using System.IO.Compression;
 using CDP;
 using Google.Protobuf;
-using LogReaderLibrary.Compression;
-using LogReaderLibrary.Models.Proto.Timeseries;
+using SeaBrief.Compression;
+using SeaBrief.Models.Proto.Timeseries;
 
 
 namespace Application.Tests;

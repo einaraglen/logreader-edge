@@ -24,8 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
-    <Reference Include="LogReaderLibrary">
-       <HintPath>..\lib\logreader-lib-0.1.6.dll</HintPath>
+     <Reference Include="SeaBrief">
+       <HintPath>..\lib\seabrief-lib-0.1.9.dll</HintPath>
      </Reference>
   </ItemGroup>
 
